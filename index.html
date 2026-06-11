@@ -1,0 +1,1856 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>郭玉卓 — 产品经理 · 7年经验</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DESIGN TOKENS — SiteFlow Base (黑白灰)
+   ============================================================ */
+:root {
+  --bg: #ffffff;
+  --fg: #0a0a0a;
+  --fg-secondary: #52525b;
+  --fg-muted: #a1a1aa;
+
+  --surface: #ffffff;
+  --surface-raised: #fafafa;
+  --surface-muted: #f5f5f5;
+
+  --border: #e5e5e5;
+  --border-hover: #d4d4d8;
+
+  --primary: #171717;
+  --primary-fg: #fafafa;
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'Geist Mono', 'SF Mono', 'Menlo', monospace;
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.05);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.06);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,.08);
+
+  --ease-out: cubic-bezier(.16,1,.3,1);
+  --ease-spring: cubic-bezier(.34,1.56,.64,1);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+body { font-family: var(--font-sans); background: var(--bg); color: var(--fg); line-height: 1.6; overflow-x: hidden; }
+a { color: inherit; text-decoration: none; }
+::selection { background: var(--fg); color: var(--bg); }
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes typewriter {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: .1s; }
+.reveal-delay-2 { transition-delay: .2s; }
+.reveal-delay-3 { transition-delay: .3s; }
+.reveal-delay-4 { transition-delay: .4s; }
+
+/* ============================================================
+   BACKGROUND GRID LINES
+   ============================================================ */
+.grid-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  opacity: .35;
+}
+.grid-bg .v-line {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, var(--border) 20%, var(--border) 80%, transparent);
+}
+
+/* ============================================================
+   NAV
+   ============================================================ */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 0 48px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255,255,255,.82);
+  backdrop-filter: blur(16px) saturate(1.8);
+  -webkit-backdrop-filter: blur(16px) saturate(1.8);
+  border-bottom: 1px solid transparent;
+  transition: border-color .3s, box-shadow .3s;
+}
+.nav.scrolled {
+  border-bottom-color: var(--border);
+  box-shadow: var(--shadow-sm);
+}
+.nav-brand {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+.nav-brand .mark {
+  width: 28px; height: 28px;
+  background: var(--fg);
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform .3s var(--ease-spring);
+}
+.nav-brand:hover .mark { transform: rotate(-6deg) scale(1.05); }
+.nav-brand .mark span {
+  color: var(--bg);
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+.nav-links a {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fg-secondary);
+  transition: color .15s;
+  position: relative;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0; right: 0;
+  height: 1.5px;
+  background: var(--fg);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .25s var(--ease-out);
+}
+.nav-links a:hover { color: var(--fg); }
+.nav-links a:hover::after { transform: scaleX(1); }
+.nav-links a.active { color: var(--fg); }
+.nav-links a.active::after { transform: scaleX(1); }
+.nav-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  background: var(--primary);
+  color: var(--primary-fg);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  transition: all .2s;
+  border: none;
+  cursor: pointer;
+}
+.nav-cta:hover {
+  background: #262626;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+.nav-cta svg { transition: transform .2s; }
+.nav-cta:hover svg { transform: translateX(2px); }
+
+/* Mobile menu */
+.nav-mobile-toggle {
+  display: none;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 6px 10px;
+  cursor: pointer;
+  color: var(--fg);
+}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero {
+  padding: 160px 48px 80px;
+  max-width: 1100px;
+  margin: 0 auto;
+  position: relative;
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 14px 5px 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fg-secondary);
+  margin-bottom: 32px;
+  animation: fadeUp .8s var(--ease-out) .1s both;
+  cursor: default;
+  transition: border-color .3s, box-shadow .3s;
+}
+.hero-badge:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-sm);
+}
+.hero-badge .dot {
+  width: 6px; height: 6px;
+  background: #86efac;
+  border-radius: 50%;
+  animation: blink 2s infinite;
+}
+.hero-badge .mono {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--fg-muted);
+}
+
+.hero h1 {
+  font-size: clamp(40px, 6vw, 72px);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  margin-bottom: 20px;
+  animation: fadeUp .8s var(--ease-out) .2s both;
+}
+.hero h1 .line { display: block; }
+.hero h1 .accent {
+  position: relative;
+  display: inline-block;
+}
+.hero h1 .accent::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  background: var(--fg);
+  opacity: .08;
+  border-radius: 4px;
+}
+
+.hero-subtitle {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--fg);
+  margin-bottom: 8px;
+  animation: fadeUp .8s var(--ease-out) .3s both;
+  letter-spacing: -0.01em;
+}
+
+.hero-desc {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--fg-secondary);
+  max-width: 560px;
+  margin-bottom: 36px;
+  animation: fadeUp .8s var(--ease-out) .35s both;
+}
+
+.hero-contact {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  animation: fadeUp .8s var(--ease-out) .4s both;
+  margin-bottom: 36px;
+}
+.contact-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--fg-secondary);
+  font-family: var(--font-mono);
+  padding: 6px 14px;
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  transition: all .25s;
+  cursor: pointer;
+}
+.contact-item:hover {
+  border-color: var(--border-hover);
+  background: var(--bg);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+.contact-item svg {
+  width: 14px; height: 14px;
+  color: var(--fg-muted);
+  flex-shrink: 0;
+}
+.contact-item .copied-toast {
+  font-size: 11px;
+  color: #86efac;
+  font-weight: 600;
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: fadeUp .8s var(--ease-out) .45s both;
+}
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: var(--primary);
+  color: var(--primary-fg);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  border: none;
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn-primary:hover {
+  background: #262626;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+}
+.btn-primary svg { transition: transform .2s; }
+.btn-primary:hover svg { transform: translateX(3px); }
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: transparent;
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn-secondary:hover {
+  border-color: var(--border-hover);
+  background: var(--surface-muted);
+}
+
+/* ============================================================
+   STATS BAR
+   ============================================================ */
+.stats-bar {
+  padding: 48px;
+  max-width: 1100px;
+  margin: 0 auto;
+  border-top: 1px solid var(--border);
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+}
+.stat-item {
+  text-align: center;
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  transition: background .3s;
+  cursor: default;
+}
+.stat-item:hover { background: var(--surface-muted); }
+.stat-number {
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-bottom: 6px;
+  font-family: var(--font-mono);
+}
+.stat-label {
+  font-size: 13px;
+  color: var(--fg-muted);
+}
+
+/* ============================================================
+   SECTION COMMON
+   ============================================================ */
+.section {
+  padding: 100px 48px;
+  max-width: 1100px;
+  margin: 0 auto;
+  border-top: 1px solid var(--border);
+}
+.section-header {
+  margin-bottom: 56px;
+}
+.section-eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--fg-muted);
+  margin-bottom: 16px;
+  font-family: var(--font-mono);
+}
+.section-header h2 {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  margin-bottom: 16px;
+}
+.section-header p {
+  font-size: 16px;
+  color: var(--fg-secondary);
+  max-width: 520px;
+  line-height: 1.7;
+}
+
+/* ============================================================
+   EXPERIENCE TIMELINE
+   ============================================================ */
+.timeline {
+  position: relative;
+  padding-left: 32px;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  bottom: 0;
+  left: 7px;
+  width: 1px;
+  background: var(--border);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 48px;
+}
+.timeline-item:last-child { margin-bottom: 0; }
+
+.timeline-dot {
+  position: absolute;
+  left: -32px;
+  top: 6px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--bg);
+  z-index: 2;
+  transition: all .3s;
+}
+.timeline-item:hover .timeline-dot {
+  background: var(--fg);
+  border-color: var(--fg);
+  transform: scale(1.2);
+}
+.timeline-dot::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  width: 17px;
+  height: 1px;
+  background: var(--border);
+}
+
+.timeline-header {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+.timeline-company {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.timeline-role {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fg-secondary);
+}
+.timeline-period {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--fg-muted);
+  padding: 3px 10px;
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  margin-left: auto;
+}
+
+/* Expandable card */
+.timeline-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  overflow: hidden;
+  transition: all .3s var(--ease-out);
+  margin-top: 12px;
+  position: relative;
+}
+.timeline-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--fg);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .4s var(--ease-out);
+}
+.timeline-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-md);
+}
+.timeline-card:hover::before { transform: scaleX(1); }
+
+.timeline-card-summary {
+  padding: 24px 28px;
+  font-size: 14px;
+  color: var(--fg-secondary);
+  line-height: 1.7;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  user-select: none;
+}
+.timeline-card-summary .expand-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--fg-muted);
+  transition: transform .3s var(--ease-out), color .3s;
+}
+.timeline-card.expanded .expand-icon {
+  transform: rotate(180deg);
+  color: var(--fg);
+}
+
+.timeline-card-details {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .5s var(--ease-out);
+}
+.timeline-card.expanded .timeline-card-details {
+  max-height: 3000px;
+}
+.timeline-card-details-inner {
+  padding: 0 28px 28px;
+  border-top: 1px solid var(--border);
+}
+
+.detail-group {
+  margin-top: 20px;
+}
+.detail-group-title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fg-muted);
+  margin-bottom: 12px;
+  font-family: var(--font-mono);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.detail-group-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.detail-list {
+  list-style: none;
+}
+.detail-list li {
+  position: relative;
+  padding: 8px 0 8px 20px;
+  font-size: 14px;
+  color: var(--fg-secondary);
+  line-height: 1.7;
+  border-bottom: 1px solid transparent;
+  transition: all .2s;
+}
+.detail-list li:hover {
+  color: var(--fg);
+  border-bottom-color: var(--border);
+}
+.detail-list li::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 16px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: background .2s;
+}
+.detail-list li:hover::before {
+  background: var(--fg);
+}
+
+/* ============================================================
+   SKILLS / CAPABILITIES
+   ============================================================ */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.skill-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  background: var(--surface);
+  transition: all .3s var(--ease-out);
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+}
+.skill-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--fg);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .4s var(--ease-out);
+}
+.skill-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+.skill-card:hover::before { transform: scaleX(1); }
+
+.skill-icon {
+  width: 40px; height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  transition: all .3s;
+}
+.skill-card:hover .skill-icon {
+  background: var(--fg);
+  border-color: var(--fg);
+}
+.skill-card:hover .skill-icon svg { color: var(--bg) !important; }
+.skill-icon svg {
+  width: 18px; height: 18px;
+  color: var(--fg);
+  transition: color .3s;
+}
+.skill-title {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 6px;
+}
+.skill-desc {
+  font-size: 13px;
+  color: var(--fg-muted);
+  line-height: 1.65;
+}
+.skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+.skill-tag {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--fg-muted);
+  transition: all .2s;
+}
+.skill-tag:hover {
+  border-color: var(--border-hover);
+  color: var(--fg-secondary);
+}
+
+/* ============================================================
+   PROJECTS
+   ============================================================ */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+.project-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  background: var(--surface);
+  transition: all .3s var(--ease-out);
+  position: relative;
+  overflow: hidden;
+}
+.project-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--fg);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .4s var(--ease-out);
+}
+.project-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+.project-card:hover::before { transform: scaleX(1); }
+
+.project-card .project-num {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--fg-muted);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.project-card .project-num::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.project-title {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+}
+.project-role-tag {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--fg-muted);
+  margin-bottom: 14px;
+}
+.project-desc {
+  font-size: 14px;
+  color: var(--fg-secondary);
+  line-height: 1.7;
+}
+.project-metrics {
+  display: flex;
+  gap: 20px;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+.project-metric {
+  text-align: center;
+}
+.project-metric-num {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.project-metric-label {
+  font-size: 11px;
+  color: var(--fg-muted);
+  margin-top: 2px;
+}
+
+/* ============================================================
+   EDUCATION
+   ============================================================ */
+.edu-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 36px;
+  background: var(--surface);
+  transition: all .3s var(--ease-out);
+  position: relative;
+  overflow: hidden;
+}
+.edu-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--fg);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .4s var(--ease-out);
+}
+.edu-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-md);
+}
+.edu-card:hover::before { transform: scaleX(1); }
+
+.edu-header {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.edu-school {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.edu-major {
+  font-size: 14px;
+  color: var(--fg-secondary);
+}
+.edu-degree {
+  font-size: 13px;
+  font-family: var(--font-mono);
+  color: var(--fg-muted);
+  padding: 3px 10px;
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+}
+.edu-period {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--fg-muted);
+  margin-left: auto;
+}
+.edu-highlights {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.edu-highlights li {
+  font-size: 14px;
+  color: var(--fg-secondary);
+  line-height: 1.65;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--surface-muted);
+  border: 1px solid transparent;
+  transition: all .25s;
+  cursor: default;
+}
+.edu-highlights li:hover {
+  border-color: var(--border);
+  background: var(--bg);
+}
+
+/* ============================================================
+   AWARDS
+   ============================================================ */
+.awards-list {
+  display: grid;
+  gap: 12px;
+}
+.award-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  transition: all .3s var(--ease-out);
+  cursor: default;
+}
+.award-item:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-sm);
+  transform: translateX(4px);
+}
+.award-icon {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all .3s;
+}
+.award-item:hover .award-icon {
+  background: var(--fg);
+  border-color: var(--fg);
+}
+.award-item:hover .award-icon svg { color: var(--bg) !important; }
+.award-icon svg { width: 16px; height: 16px; color: var(--fg); transition: color .3s; }
+.award-text {
+  font-size: 14px;
+  color: var(--fg-secondary);
+  line-height: 1.65;
+}
+.award-text strong {
+  color: var(--fg);
+  font-weight: 600;
+}
+
+/* ============================================================
+   FOOTER / CTA
+   ============================================================ */
+.footer-cta {
+  padding: 100px 48px;
+  max-width: 1100px;
+  margin: 0 auto;
+  text-align: center;
+  border-top: 1px solid var(--border);
+}
+.footer-cta h2 {
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  margin-bottom: 16px;
+}
+.footer-cta p {
+  font-size: 16px;
+  color: var(--fg-secondary);
+  margin-bottom: 36px;
+  max-width: 440px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.7;
+}
+.footer-cta-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.footer {
+  padding: 40px 48px;
+  max-width: 1100px;
+  margin: 0 auto;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-left {
+  font-size: 13px;
+  color: var(--fg-muted);
+}
+.footer-left .brand {
+  font-weight: 600;
+  color: var(--fg);
+}
+.footer-right {
+  font-size: 12px;
+  color: var(--fg-muted);
+  font-family: var(--font-mono);
+}
+
+/* ============================================================
+   SCROLL PROGRESS BAR
+   ============================================================ */
+.scroll-progress {
+  position: fixed;
+  top: 64px;
+  left: 0;
+  height: 2px;
+  background: var(--fg);
+  z-index: 99;
+  transition: width .1s linear;
+  width: 0%;
+}
+
+/* ============================================================
+   BACK TO TOP
+   ============================================================ */
+.back-to-top {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--primary-fg);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: all .3s var(--ease-out);
+  z-index: 50;
+  box-shadow: var(--shadow-lg);
+}
+.back-to-top.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.back-to-top:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 48px rgba(0,0,0,.12);
+}
+.back-to-top svg {
+  width: 18px; height: 18px;
+}
+
+/* ============================================================
+   TOOLTIP
+   ============================================================ */
+.tooltip-container {
+  position: fixed;
+  bottom: 80px;
+  right: 24px;
+  background: var(--fg);
+  color: var(--primary-fg);
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-family: var(--font-mono);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: all .25s var(--ease-out);
+  pointer-events: none;
+  z-index: 60;
+  white-space: nowrap;
+}
+.tooltip-container.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+  .nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .nav-mobile-toggle { display: block; }
+  .hero { padding: 120px 20px 60px; }
+  .hero h1 { font-size: clamp(32px, 8vw, 48px); }
+  .hero-contact { gap: 10px; }
+  .contact-item { font-size: 12px; padding: 5px 10px; }
+  .stats-bar { padding: 32px 20px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .section { padding: 60px 20px; }
+  .skills-grid { grid-template-columns: 1fr; }
+  .projects-grid { grid-template-columns: 1fr; }
+  .edu-highlights { grid-template-columns: 1fr; }
+  .timeline { padding-left: 24px; }
+  .timeline::before { left: 5px; }
+  .timeline-dot { left: -24px; width: 11px; height: 11px; }
+  .timeline-dot::after { width: 13px; }
+  .timeline-period { margin-left: 0; margin-top: 4px; }
+  .timeline-header { flex-direction: column; gap: 4px; }
+  .footer { padding: 32px 20px; flex-direction: column; gap: 12px; text-align: center; }
+  .footer-cta { padding: 60px 20px; }
+  .back-to-top { bottom: 20px; right: 20px; }
+}
+
+/* ============================================================
+   PRINT STYLES
+   ============================================================ */
+@media print {
+  .nav, .grid-bg, .scroll-progress, .back-to-top, .tooltip-container { display: none !important; }
+  .hero { padding-top: 40px; }
+  .section { padding: 30px 20px; border-top: 1px solid #ddd; }
+  .timeline-card-details { max-height: none !important; }
+  .reveal { opacity: 1 !important; transform: none !important; }
+  body { font-size: 11px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Background grid -->
+<div class="grid-bg">
+  <div class="v-line" style="left: 10%;"></div>
+  <div class="v-line" style="left: 30%;"></div>
+  <div class="v-line" style="left: 50%;"></div>
+  <div class="v-line" style="left: 70%;"></div>
+  <div class="v-line" style="left: 90%;"></div>
+</div>
+
+<!-- Scroll progress -->
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- Nav -->
+<nav class="nav" id="nav">
+  <div class="nav-brand" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <div class="mark"><span>G</span></div>
+    郭玉卓
+  </div>
+  <div class="nav-links" id="navLinks">
+    <a href="#summary" data-section="summary">个人总结</a>
+    <a href="#experience" data-section="experience">工作经历</a>
+    <a href="#skills" data-section="skills">核心能力</a>
+    <a href="#projects" data-section="projects">项目经历</a>
+    <a href="#education" data-section="education">教育背景</a>
+  </div>
+  <button class="nav-cta" onclick="window.print()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    下载简历
+  </button>
+  <button class="nav-mobile-toggle" id="mobileToggle" onclick="toggleMobileMenu()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+</nav>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<section class="hero" id="hero">
+  <div class="hero-badge">
+    <span class="dot"></span>
+    正在寻找新机会
+    <span class="mono">· 产品经理</span>
+  </div>
+
+  <h1>
+    <span class="line">郭玉卓</span>
+    <span class="line" style="font-size: clamp(22px, 3vw, 36px); color: var(--fg-secondary); font-weight: 500; letter-spacing: -0.02em;">Zoe L. Kwok</span>
+  </h1>
+
+  <p class="hero-subtitle">资深产品经理 · 7年互联网实战经验</p>
+
+  <p class="hero-desc">
+    资深电商软件产品专家，擅长业务数字化，多次从 0 到 1 完成产品规划到业务闭环的体系化落地。兼具 B 端与 C 端产品思维，服务 10+ 世界 500 强客户。
+  </p>
+
+  <div class="hero-contact">
+    <span class="contact-item" onclick="copyText('17794472663', this)" title="点击复制手机号">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      177-9447-2663
+    </span>
+    <span class="contact-item" onclick="copyText('guo.yuzhuo@outlook.com', this)" title="点击复制邮箱">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      guo.yuzhuo@outlook.com
+    </span>
+    <span class="contact-item" style="cursor: default;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      期望薪资 27K
+    </span>
+  </div>
+
+  <div class="hero-actions">
+    <button class="btn-primary" onclick="document.getElementById('experience').scrollIntoView({behavior:'smooth'})">
+      查看经历
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="btn-secondary" onclick="document.getElementById('summary').scrollIntoView({behavior:'smooth'})">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      了解更多
+    </button>
+  </div>
+</section>
+
+<!-- ============================================================
+     STATS
+     ============================================================ -->
+<section class="stats-bar reveal" id="summary">
+  <div class="stats-grid">
+    <div class="stat-item reveal reveal-delay-1">
+      <div class="stat-number" data-count="7">0</div>
+      <div class="stat-label">年产品经验</div>
+    </div>
+    <div class="stat-item reveal reveal-delay-2">
+      <div class="stat-number" data-count="10" data-suffix="+">0</div>
+      <div class="stat-label">世界500强客户服务</div>
+    </div>
+    <div class="stat-item reveal reveal-delay-3">
+      <div class="stat-number" data-count="30" data-suffix="+">0</div>
+      <div class="stat-label">版本发布</div>
+    </div>
+    <div class="stat-item reveal reveal-delay-4">
+      <div class="stat-number" data-count="200" data-suffix="+">0</div>
+      <div class="stat-label">新功能交付</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     PERSONAL SUMMARY DETAIL
+     ============================================================ -->
+<section class="section" id="summary-detail">
+  <div class="section-header reveal">
+    <div class="section-eyebrow">// 个人总结</div>
+    <h2>产品全栈能力，<br>从战略到落地。</h2>
+  </div>
+  <div class="skills-grid">
+    <div class="skill-card reveal reveal-delay-1">
+      <div class="skill-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      </div>
+      <div class="skill-title">B端 + C端双重视角</div>
+      <div class="skill-desc">兼具企业软件矩阵（SCRM / 供应链 / 商城）产品经验与 C 端用户体验设计能力。</div>
+    </div>
+    <div class="skill-card reveal reveal-delay-2">
+      <div class="skill-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+      </div>
+      <div class="skill-title">0→1 体系化建设</div>
+      <div class="skill-desc">多次主导从产品规划到业务闭环的完整链路，涵盖商业模式设计、系统架构、运营支撑。</div>
+    </div>
+    <div class="skill-card reveal reveal-delay-3">
+      <div class="skill-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <div class="skill-title">数字化咨询专家</div>
+      <div class="skill-desc">累计为企业提供运营咨询、数字化营销和用户体验设计服务 10 余次，深谙企业数字化转型痛点。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     WORK EXPERIENCE
+     ============================================================ -->
+<section class="section" id="experience">
+  <div class="section-header reveal">
+    <div class="section-eyebrow">// 工作经历</div>
+    <h2>从产品经理到<br>创新业务总监。</h2>
+    <p>点击每段经历卡片可展开查看详细内容。</p>
+  </div>
+
+  <div class="timeline">
+    <!-- 商派软件 -->
+    <div class="timeline-item reveal">
+      <div class="timeline-dot"></div>
+      <div class="timeline-header">
+        <span class="timeline-company">商派软件</span>
+        <span class="timeline-role">创新业务总监 / 产品经理</span>
+        <span class="timeline-period">2021.01 — 2025.01</span>
+      </div>
+      <div class="timeline-card" onclick="toggleCard(this)">
+        <div class="timeline-card-summary">
+          <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          <div>
+            主导公司战略级创新业务从 0 到 1 体系建设，构建软件系统+服务的创新业务闭环。负责 4 大商城产品线的产品规划、需求管理、设计和开发上线，累计完成 30+ 版本发布、500+ bug 修复、200+ 新功能交付。同时主导 SCRM 产品规划与阿里云多端商城项目。
+          </div>
+        </div>
+        <div class="timeline-card-details">
+          <div class="timeline-card-details-inner">
+            <div class="detail-group">
+              <div class="detail-group-title">创新业务建设</div>
+              <ul class="detail-list">
+                <li><strong>企业内购生态构建</strong> — 创新设计「内购联盟」商业模式，整合多个头部品牌和企业福利平台，通过 SaaS 化平台实现跨企业联合内购。</li>
+                <li><strong>供应链中台打造</strong> — 建立公司首个多角色协同供应链体系，整合品牌直供 / 平台货源 / ODM 工厂 3 层供应网络，设计标准化 API 接口。</li>
+                <li><strong>福利 / 积分 / 特价商城系统</strong> — 主导设计可插拔式商城系统，H5 嵌入式解决方案与独立小程序双模式运营，支撑三大核心场景。</li>
+                <li><strong>SPBC 生态平台设计</strong> — 基于模块化架构设计，将供应链管理、商户入驻、用户运营、交易商城等系统解耦为多个可配置模块。</li>
+              </ul>
+            </div>
+            <div class="detail-group">
+              <div class="detail-group-title">商城产品线</div>
+              <ul class="detail-list">
+                <li><strong>重构商品系统</strong> — 重构店铺商品、商家商品、平台商品、分销商品等，构建多层级多维度商品管理体系。</li>
+                <li><strong>重构订单系统</strong> — 重构订单列表及关联的营促销、客服、履约售后、支付收款、分账结算等全流程，新增订单改价、到店/跨店自提/配送/售后等能力。</li>
+                <li><strong>重构商城装修</strong> — 重构移动端商城首页、商详页、个人中心、营销活动落地页等自定义装修能力。</li>
+                <li><strong>外部服务对接</strong> — 对接阿里云短信、腾讯有数、微信视频号、微信客服、美洽等三方服务和系统。</li>
+                <li><strong>应用服务市场</strong> — 建设商城服务市场，整合内部产品与外部服务商接入，构建快速付费开通使用能力。</li>
+              </ul>
+            </div>
+            <div class="detail-group">
+              <div class="detail-group-title">SCRM & 阿里云</div>
+              <ul class="detail-list">
+                <li><strong>企业微信三方应用上架</strong> — 按上架标准改造产品，包括应用安装、登录、试用、数据安全等流程。</li>
+                <li><strong>SCRM 功能矩阵</strong> — 用户角色与权限体系、客户拉新（批量加好友、渠道活码）、客户裂变、客户运营（画像/标签/SOP）、素材库、互动雷达等。</li>
+                <li><strong>阿里云多端商城</strong> — 基于 LinkedMall 将猫淘店铺商品同步至微信/支付宝小程序等自建商城，订单回流完成履约及售后。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 翼码科技 -->
+    <div class="timeline-item reveal">
+      <div class="timeline-dot"></div>
+      <div class="timeline-header">
+        <span class="timeline-company">翼码科技</span>
+        <span class="timeline-role">产品经理</span>
+        <span class="timeline-period">2019.11 — 2021.01</span>
+      </div>
+      <div class="timeline-card" onclick="toggleCard(this)">
+        <div class="timeline-card-summary">
+          <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          <div>
+            5 个月完成两个产品 0→1 上线，5 个月完成 3 个项目的实施交付。负责产品迭代优化、用户数据收集与反馈分析，持续提升产品用户体验和价值。
+          </div>
+        </div>
+        <div class="timeline-card-details">
+          <div class="timeline-card-details-inner">
+            <div class="detail-group">
+              <div class="detail-group-title">项目经历</div>
+              <ul class="detail-list">
+                <li><strong>微信小程序商城</strong> — 参与用户需求调研、场景梳理与分析、产品逻辑和需求转化，制定功能清单并协调内外部开发团队。</li>
+                <li><strong>素材管理平台</strong> — 负责需求调研、产品功能设计、原型设计、UI 调整、交互设计，协调开发测试运维，完成用户培训和系统交付。</li>
+                <li><strong>企业微信应用</strong> — 围绕 KA 需求设计标准产品功能清单和模块框架，协调产研资源确保按时上线。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 养气科技 -->
+    <div class="timeline-item reveal">
+      <div class="timeline-dot"></div>
+      <div class="timeline-header">
+        <span class="timeline-company">养气科技 (Ozense Technology)</span>
+        <span class="timeline-role">联合创始人 / 产品负责人</span>
+        <span class="timeline-period">2016.05 — 2019.11</span>
+      </div>
+      <div class="timeline-card" onclick="toggleCard(this)">
+        <div class="timeline-card-summary">
+          <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          <div>
+            主持养气空中花园 (Ozense Hive Garden) 系列产品的设计研发，带领团队从 0 到 1 完成产品开发。负责产品线规划、用户模型建立、需求拆解、交互设计及团队组建等全方位工作。
+          </div>
+        </div>
+        <div class="timeline-card-details">
+          <div class="timeline-card-details-inner">
+            <div class="detail-group">
+              <div class="detail-group-title">产品工作</div>
+              <ul class="detail-list">
+                <li><strong>产品线规划</strong> — 结合公司能力和市场数据，构建产品矩阵，用多条产品线满足多场景需求，建立标准化管理体系。</li>
+                <li><strong>用户研究</strong> — 建立目标用户模型和种子用户社群，通过市场调研、竞品分析、场景分析挖掘需求，确定 MVP 及迭代路线。</li>
+                <li><strong>产品设计</strong> — 设计产品原型、Roadmap、PRD 等文档，统筹开发团队，建立工作文档保障高质量交付。</li>
+                <li><strong>交互体验设计</strong> — 根据目标用户习惯、心理和行为逻辑，设计全流程用户体验，打造用户爽点。</li>
+              </ul>
+            </div>
+            <div class="detail-group">
+              <div class="detail-group-title">其他贡献</div>
+              <ul class="detail-list">
+                <li><strong>团队组建</strong> — 建立标准化招聘体系，组建核心团队，建立招聘、入职、培训、晋升、考核的完整人事管理方案。</li>
+                <li><strong>运营管理</strong> — 制定管理运营 SOP，优化办公流程，建立清晰高效的沟通协作机制。</li>
+                <li><strong>品牌建设</strong> — 代表公司参加海南省创新创业大赛，获得初赛一等奖、复赛 8 强。帮助申请商标 28 个、注册专利 3 个。</li>
+                <li><strong>新媒体运营</strong> — 官网改版设计，翻译中英文章 40+ 篇，6 个月为 4 个公众号发布原创文章 40+，涨粉 5000+。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SKILLS
+     ============================================================ -->
+<section class="section" id="skills">
+  <div class="section-header reveal">
+    <div class="section-eyebrow">// 核心能力</div>
+    <h2>全链路产品能力，<br>覆盖从战略到执行。</h2>
+  </div>
+  <div class="skills-grid">
+    <div class="skill-card reveal reveal-delay-1">
+      <div class="skill-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </div>
+      <div class="skill-title">产品规划与战略</div>
+      <div class="skill-desc">产品线规划、商业模式设计、Roadmap 制定、MVP 定义与迭代策略。</div>
+      <div class="skill-tags">
+        <span class="skill-tag">产品战略</span>
+        <span class="skill-tag">商业模式</span>
+        <span class="skill-tag">路线图</span>
+      </div>
+    </div>
+    <div class="skill-card reveal reveal-delay-2">
+      <div class="skill-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+      </div>
+      <div class="skill-title">产品设计与原型</div>
+      <div class="skill-desc">交互设计、用户体验全流程、原型设计、PRD 撰写、UI/UX 规范制定。</div>
+      <div class="skill-tags">
+        <span class="skill-tag">交互设计</span>
+        <span class="skill-tag">原型</span>
+        <span class="skill-tag">PRD</span>
+      </div>
+    </div>
+    <div class="skill-card reveal reveal-delay-3">
+      <div class="skill-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+      </div>
+      <div class="skill-title">数据驱动增长</div>
+      <div class="skill-desc">用户数据分析、A/B 测试、漏斗优化、用户画像、运营数据看板设计。</div>
+      <div class="skill-tags">
+        <span class="skill-tag">数据分析</span>
+        <span class="skill-tag">用户画像</span>
+        <span class="skill-tag">增长</span>
+      </div>
+    </div>
+    <div class="skill-card reveal reveal-delay-1">
+      <div class="skill-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <div class="skill-title">团队管理与协作</div>
+      <div class="skill-desc">跨部门协调、产研资源调配、敏捷开发管理、团队组建与培训。</div>
+      <div class="skill-tags">
+        <span class="skill-tag">敏捷管理</span>
+        <span class="skill-tag">跨部门</span>
+        <span class="skill-tag">培训</span>
+      </div>
+    </div>
+    <div class="skill-card reveal reveal-delay-2">
+      <div class="skill-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+      </div>
+      <div class="skill-title">系统架构设计</div>
+      <div class="skill-desc">模块化架构、SaaS 平台设计、API 标准化、多端适配方案、微服务拆分。</div>
+      <div class="skill-tags">
+        <span class="skill-tag">SaaS</span>
+        <span class="skill-tag">模块化</span>
+        <span class="skill-tag">API</span>
+      </div>
+    </div>
+    <div class="skill-card reveal reveal-delay-3">
+      <div class="skill-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      </div>
+      <div class="skill-title">电商全域能力</div>
+      <div class="skill-desc">商品 / 订单 / 支付 / 履约 / 售后全链路，SCRM、供应链、商城系统深度经验。</div>
+      <div class="skill-tags">
+        <span class="skill-tag">商城</span>
+        <span class="skill-tag">SCRM</span>
+        <span class="skill-tag">供应链</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     PROJECTS
+     ============================================================ -->
+<section class="section" id="projects">
+  <div class="section-header reveal">
+    <div class="section-eyebrow">// 项目亮点</div>
+    <h2>重点项目，<br>可量化的成果。</h2>
+  </div>
+  <div class="projects-grid">
+    <div class="project-card reveal reveal-delay-1">
+      <div class="project-num">PROJECT 01</div>
+      <div class="project-title">企业内购联盟平台</div>
+      <div class="project-role-tag">创新业务 · 产品负责人</div>
+      <div class="project-desc">
+        创新设计「内购联盟」商业模式，整合多个头部品牌和企业福利平台，通过 SaaS 化平台实现跨企业联合内购，构建完整的供应链中台与可插拔式商城系统。
+      </div>
+      <div class="project-metrics">
+        <div class="project-metric">
+          <div class="project-metric-num">SaaS</div>
+          <div class="project-metric-label">平台模式</div>
+        </div>
+        <div class="project-metric">
+          <div class="project-metric-num">3层</div>
+          <div class="project-metric-label">供应网络</div>
+        </div>
+        <div class="project-metric">
+          <div class="project-metric-num">双模</div>
+          <div class="project-metric-label">H5+小程序</div>
+        </div>
+      </div>
+    </div>
+    <div class="project-card reveal reveal-delay-2">
+      <div class="project-num">PROJECT 02</div>
+      <div class="project-title">商城产品矩阵重构</div>
+      <div class="project-role-tag">4大商城 · 产品经理</div>
+      <div class="project-desc">
+        负责连锁版、多商户入驻版、单店版和内购版 4 大商城产品线，重构商品系统、订单系统、商城装修，累计完成 30+ 版本发布和 200+ 新功能交付。
+      </div>
+      <div class="project-metrics">
+        <div class="project-metric">
+          <div class="project-metric-num">4</div>
+          <div class="project-metric-label">产品线</div>
+        </div>
+        <div class="project-metric">
+          <div class="project-metric-num">30+</div>
+          <div class="project-metric-label">版本发布</div>
+        </div>
+        <div class="project-metric">
+          <div class="project-metric-num">500+</div>
+          <div class="project-metric-label">Bug 修复</div>
+        </div>
+      </div>
+    </div>
+    <div class="project-card reveal reveal-delay-1">
+      <div class="project-num">PROJECT 03</div>
+      <div class="project-title">SCRM 企微生态</div>
+      <div class="project-role-tag">SCRM · 产品规划</div>
+      <div class="project-desc">
+        主导 SCRM 产品规划与设计，完成企业微信三方应用上架，构建客户拉新、裂变、运营、画像、SOP、素材库、互动雷达等完整功能矩阵。
+      </div>
+      <div class="project-metrics">
+        <div class="project-metric">
+          <div class="project-metric-num">企微</div>
+          <div class="project-metric-label">三方上架</div>
+        </div>
+        <div class="project-metric">
+          <div class="project-metric-num">8+</div>
+          <div class="project-metric-label">功能模块</div>
+        </div>
+      </div>
+    </div>
+    <div class="project-card reveal reveal-delay-2">
+      <div class="project-num">PROJECT 04</div>
+      <div class="project-title">本地生活预付费卡平台</div>
+      <div class="project-role-tag">0→1 · 产品负责人</div>
+      <div class="project-desc">
+        主导预付费卡售卖及监管平台从 0 到 1 的产品规划和设计，包含消费者商城、商家端、平台管理系统、政府监管系统四大子系统。
+      </div>
+      <div class="project-metrics">
+        <div class="project-metric">
+          <div class="project-metric-num">300+</div>
+          <div class="project-metric-label">移动端页面</div>
+        </div>
+        <div class="project-metric">
+          <div class="project-metric-num">100+</div>
+          <div class="project-metric-label">Web 端页面</div>
+        </div>
+        <div class="project-metric">
+          <div class="project-metric-num">20+</div>
+          <div class="project-metric-label">版本发布</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     EDUCATION
+     ============================================================ -->
+<section class="section" id="education">
+  <div class="section-header reveal">
+    <div class="section-eyebrow">// 教育背景</div>
+    <h2>学术基础，<br>综合能力培养。</h2>
+  </div>
+  <div class="edu-card reveal">
+    <div class="edu-header">
+      <span class="edu-school">海南大学</span>
+      <span class="edu-major">信息管理与信息系统</span>
+      <span class="edu-degree">管理学学士</span>
+      <span class="edu-period">2013.09 — 2017.06</span>
+    </div>
+    <ul class="edu-highlights">
+      <li>学院就业工作小组主席，组织宣讲会/招聘会 100+ 次，万人级招聘会 2 次</li>
+      <li>路透者协会城西部部长，组织 200 人会员招新与百余人次社团活动 5 次</li>
+      <li>搭建 10+ 新媒体平台矩阵，制定运营规则与标准，部分规则沿用至今</li>
+      <li>校内志愿者活动 15+ 次，万人音乐节志愿者</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================================================
+     AWARDS
+     ============================================================ -->
+<section class="section" id="awards">
+  <div class="section-header reveal">
+    <div class="section-eyebrow">// 奖项荣誉</div>
+    <h2>认可与资质。</h2>
+  </div>
+  <div class="awards-list">
+    <div class="award-item reveal reveal-delay-1">
+      <div class="award-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+      </div>
+      <div class="award-text">
+        第五届全国大学生电子商务大赛 <strong>全国三等奖</strong>、海南省一等奖、海南大学三等奖
+      </div>
+    </div>
+    <div class="award-item reveal reveal-delay-2">
+      <div class="award-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+      </div>
+      <div class="award-text">
+        海南大学经济与管理学院 <strong>"优秀共青团员"</strong>、<strong>"暑期社会实践积极分子"</strong>
+      </div>
+    </div>
+    <div class="award-item reveal reveal-delay-3">
+      <div class="award-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+      </div>
+      <div class="award-text">
+        vivo · 广州 2017 精英人才培养计划 <strong>"优秀学员"</strong> 奖
+      </div>
+    </div>
+    <div class="award-item reveal reveal-delay-4">
+      <div class="award-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      </div>
+      <div class="award-text">
+        <strong>计算机三级</strong> · <strong>阿里巴巴数字化管理专员</strong> 认证
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER CTA
+     ============================================================ -->
+<section class="footer-cta reveal">
+  <h2>期待与您合作。</h2>
+  <p>如果您正在寻找一位具有 7 年实战经验的产品经理，欢迎联系我。</p>
+  <div class="footer-cta-actions">
+    <button class="btn-primary" onclick="copyText('17794472663', this)" style="padding: 14px 28px; font-size: 15px;">
+      复制联系方式
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M3.5 11V2.5A1 1 0 014.5 1.5H11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    </button>
+    <button class="btn-secondary" onclick="location.href='mailto:guo.yuzhuo@outlook.com'" style="padding: 14px 28px; font-size: 15px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      发送邮件
+    </button>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-left">
+    <span class="brand">郭玉卓</span> &nbsp;· 产品经理 · 7年经验
+  </div>
+  <div class="footer-right">
+    期望薪资 27K · 随时联系
+  </div>
+</footer>
+
+<!-- Back to top -->
+<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+
+<!-- Tooltip -->
+<div class="tooltip-container" id="tooltip"></div>
+
+<!-- ============================================================
+     SCRIPTS
+     ============================================================ -->
+<script>
+// ── Nav scroll state ──
+const nav = document.getElementById('nav');
+const scrollProgress = document.getElementById('scrollProgress');
+const backToTop = document.getElementById('backToTop');
+
+window.addEventListener('scroll', () => {
+  const scrolled = window.scrollY > 10;
+  nav.classList.toggle('scrolled', scrolled);
+  backToTop.classList.toggle('visible', window.scrollY > 400);
+
+  // Scroll progress
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = docHeight > 0 ? (window.scrollY / docHeight) * 100 : 0;
+  scrollProgress.style.width = progress + '%';
+});
+
+// ── Active nav link tracking ──
+const sections = document.querySelectorAll('section[id]');
+const navLinksAll = document.querySelectorAll('.nav-links a[data-section]');
+
+const sectionObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      navLinksAll.forEach(link => {
+        link.classList.toggle('active', link.dataset.section === id);
+      });
+    }
+  });
+}, { threshold: 0.3, rootMargin: '-64px 0px 0px 0px' });
+
+sections.forEach(sec => sectionObserver.observe(sec));
+
+// ── Reveal on scroll ──
+const reveals = document.querySelectorAll('.reveal');
+const revealObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12 });
+
+reveals.forEach(el => revealObserver.observe(el));
+
+// ── Counter animation ──
+const counters = document.querySelectorAll('.stat-number[data-count]');
+const counterObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const el = entry.target;
+      const target = parseInt(el.dataset.count);
+      const suffix = el.dataset.suffix || '';
+      const duration = 1200;
+      const start = performance.now();
+
+      function animate(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = Math.round(target * eased);
+        el.textContent = current + suffix;
+        if (progress < 1) requestAnimationFrame(animate);
+      }
+
+      requestAnimationFrame(animate);
+      counterObserver.unobserve(el);
+    }
+  });
+}, { threshold: 0.5 });
+
+counters.forEach(el => counterObserver.observe(el));
+
+// ── Expand/collapse timeline cards ──
+function toggleCard(card) {
+  const wasExpanded = card.classList.contains('expanded');
+  // Close all other cards
+  document.querySelectorAll('.timeline-card.expanded').forEach(c => {
+    if (c !== card) c.classList.remove('expanded');
+  });
+  card.classList.toggle('expanded', !wasExpanded);
+}
+
+// ── Copy to clipboard ──
+function copyText(text, el) {
+  navigator.clipboard.writeText(text).then(() => {
+    showTooltip('已复制到剪贴板: ' + text);
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showTooltip('已复制到剪贴板: ' + text);
+  });
+}
+
+// ── Tooltip ──
+let tooltipTimer;
+function showTooltip(msg) {
+  const tip = document.getElementById('tooltip');
+  tip.textContent = msg;
+  tip.classList.add('visible');
+  clearTimeout(tooltipTimer);
+  tooltipTimer = setTimeout(() => tip.classList.remove('visible'), 2000);
+}
+
+// ── Mobile menu toggle ──
+function toggleMobileMenu() {
+  const links = document.getElementById('navLinks');
+  if (links.style.display === 'flex') {
+    links.style.display = 'none';
+  } else {
+    links.style.display = 'flex';
+    links.style.position = 'fixed';
+    links.style.top = '64px';
+    links.style.left = '0';
+    links.style.right = '0';
+    links.style.background = 'rgba(255,255,255,.95)';
+    links.style.backdropFilter = 'blur(16px)';
+    links.style.flexDirection = 'column';
+    links.style.padding = '20px';
+    links.style.gap = '16px';
+    links.style.borderBottom = '1px solid var(--border)';
+    links.style.zIndex = '99';
+    links.style.animation = 'slideDown .3s var(--ease-out)';
+  }
+}
+
+// Reset mobile menu on resize
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 768) {
+    const links = document.getElementById('navLinks');
+    links.style.cssText = '';
+  }
+});
+
+// ── Keyboard shortcut: press 'T' to scroll to top ──
+document.addEventListener('keydown', (e) => {
+  if (e.key === 't' && !e.ctrlKey && !e.metaKey && e.target.tagName !== 'INPUT') {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+});
+</script>
+</body>
+</html>
